@@ -1,0 +1,24 @@
+{
+  "name": "exam-orbit",
+  "version": "1.0.0",
+  "description": "India's Premier Competitive Exam & Planetary Study Station for JEE, NEET, UPSC, CAT, GATE, and Banking",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s .",
+    "dev": "npx serve -s .",
+    "build": "echo 'Static build complete'"
+  },
+  "keywords": [
+    "jee",
+    "neet",
+    "upsc",
+    "cat",
+    "cbt-test",
+    "planetary-timer",
+    "solar-system",
+    "gemini-ai",
+    "education"
+  ],
+  "author": "ExamOrbit",
+  "license": "MIT"
+}

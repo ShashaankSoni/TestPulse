@@ -1,0 +1,101 @@
+/* ExamOrbit - Custom Cosmic & Glassmorphism Styling */
+
+@layer utilities {
+  .cosmic-glass {
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .cosmic-glow-indigo {
+    box-shadow: 0 0 30px -5px rgba(99, 102, 241, 0.25);
+  }
+
+  .cosmic-glow-purple {
+    box-shadow: 0 0 35px -5px rgba(168, 85, 247, 0.25);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Navigation active indicator */
+.active-nav {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%) !important;
+  color: #ffffff !important;
+  border-color: rgba(99, 102, 241, 0.4) !important;
+}
+
+/* Active filter buttons */
+.active-filter {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: #6366f1 !important;
+}
+
+/* Active preset buttons */
+.active-preset {
+  background: #6366f1 !important;
+  color: #ffffff !important;
+  border-color: #818cf8 !important;
+}
+
+/* Active planet select pill */
+.active-planet-pill {
+  border-color: #a855f7 !important;
+  background: rgba(168, 85, 247, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* Active task filter tab */
+.active-task-tab {
+  border-color: #6366f1 !important;
+  color: #ffffff !important;
+  background: rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Subtle Orbit Background Animation */
+@keyframes celestial-drift {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.animate-drift-slow {
+  animation: celestial-drift 120s linear infinite;
+}
+
+/* Print Styling for Test Analysis Reports */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  header, nav, #switch-exam-btn, .no-print, button {
+    display: none !important;
+  }
+  #view-analysis {
+    display: block !important;
+  }
+  .bg-slate-900, .bg-slate-950, .bg-slate-900\/80 {
+    background: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+}

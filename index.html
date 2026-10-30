@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ExamOrbit - India's Premier Competitive Exam & Celestial Study Hub</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            display: ['"Space Grotesk"', 'sans-serif']
+          },
+          colors: {
+            space: {
+              950: '#06080e',
+              900: '#0a0f1d',
+              850: '#0f172a',
+              800: '#172033'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body class="bg-[#06080e] text-slate-100 min-h-screen font-sans flex flex-col selection:bg-indigo-500 selection:text-white antialiased overflow-x-hidden">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="sticky top-0 z-40 bg-space-950/80 backdrop-blur-xl border-b border-slate-800/80 transition-all">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="window.examApp.switchTab('dashboard')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/25 ring-1 ring-white/20">
+          <i class="fas fa-satellite-dish text-lg"></i>
+        </div>
+        <div>
+          <div class="font-display font-extrabold text-lg tracking-tight text-white flex items-center gap-1.5">
+            Exam<span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">Orbit</span>
+          </div>
+          <div class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Aspirant Focus Station</div>
+        </div>
+      </div>
+
+      <!-- Center Nav Links (Desktop) -->
+      <nav class="hidden md:flex items-center gap-1 p-1 bg-slate-900/90 rounded-2xl border border-slate-800">
+        <button data-tab="dashboard" class="nav-tab-btn active-nav px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fas fa-home"></i> <span>Dashboard</span>
+        </button>
+        <button data-tab="tests" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fas fa-pen-fancy"></i> <span>Take a Test</span>
+        </button>
+        <button data-tab="analysis" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fas fa-chart-pie"></i> <span>Analysis</span>
+        </button>
+        <button data-tab="timer" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fas fa-globe"></i> <span>Planetary Timer</span>
+        </button>
+        <button data-tab="tasks" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fas fa-check-double"></i> <span>Tasks & Notes</span>
+        </button>
+        <button data-tab="ai-doubts" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1.5">
+          <i class="fas fa-robot text-purple-400"></i> <span>AI Mentor</span>
+        </button>
+      </nav>
+
+      <!-- Right Header Controls: Exam Switcher & Gemini API Key -->
+      <div class="flex items-center gap-2.5">
+        <!-- Exam Switcher Pill -->
+        <button id="switch-exam-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs transition">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span class="font-bold text-slate-200 active-exam-name-display truncate max-w-[110px] sm:max-w-[140px]">JEE Main</span>
+          <i class="fas fa-chevron-down text-[10px] text-slate-500"></i>
+        </button>
+
+        <!-- Gemini API Key button -->
+        <button id="open-api-modal-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-950/40 hover:bg-indigo-900/40 border border-indigo-500/30 text-xs transition" title="Configure your free Google Gemini API Key">
+          <i class="fas fa-key text-indigo-400"></i>
+          <span id="gemini-key-status-badge" class="hidden sm:inline-flex items-center">
+            <span class="text-indigo-300 font-medium">Gemini Key</span>
+          </span>
+        </button>
+
+        <!-- Mobile Menu Trigger -->
+        <button id="mobile-menu-btn" class="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Drawer -->
+    <div id="mobile-sidebar" class="hidden md:hidden bg-space-950/95 border-b border-slate-800 p-4 space-y-2">
+      <button data-tab="dashboard" class="nav-tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+        <i class="fas fa-home"></i> Dashboard
+      </button>
+      <button data-tab="tests" class="nav-tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+        <i class="fas fa-pen-fancy"></i> Take a Test
+      </button>
+      <button data-tab="analysis" class="nav-tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+        <i class="fas fa-chart-pie"></i> Performance Analysis
+      </button>
+      <button data-tab="timer" class="nav-tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+        <i class="fas fa-globe"></i> Planetary Study Timer
+      </button>
+      <button data-tab="tasks" class="nav-tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+        <i class="fas fa-check-double"></i> Tasks & Notes
+      </button>
+      <button data-tab="ai-doubts" class="nav-tab-btn w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 flex items-center gap-2">
+        <i class="fas fa-robot text-purple-400"></i> AI Mentor (Gemini)
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTAINER ================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- ================= VIEW 1: DASHBOARD ================= -->
+    <section id="view-dashboard" class="tab-view-section space-y-8">
+      
+      <!-- Welcome Hero Banner -->
+      <div class="relative rounded-3xl bg-gradient-to-r from-indigo-950/70 via-slate-900/90 to-purple-950/50 p-6 md:p-10 border border-indigo-500/25 overflow-hidden backdrop-blur-xl">
+        <div class="absolute -right-12 -bottom-12 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 max-w-3xl">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-xs font-bold mb-4">
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
+            Aspirant Flight Control Active
+          </div>
+          <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight mb-2">
+            Welcome back, <span class="student-name-display text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Aspirant</span>!
+          </h1>
+          <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-6">
+            Preparing for <span class="text-white font-bold active-exam-name-display">JEE (Main & Advanced)</span>. 
+            "The future belongs to those who prepare for it today." Focus with precision, crush your mock tests, and maintain your celestial momentum.
+          </p>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button onclick="window.examApp.switchTab('tests')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold text-xs tracking-wide transition shadow-lg shadow-indigo-500/25 flex items-center gap-2">
+              <i class="fas fa-play"></i> Take a Mock Test
+            </button>
+            <button onclick="window.examApp.switchTab('timer')" class="px-5 py-2.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold text-xs tracking-wide transition flex items-center gap-2">
+              <i class="fas fa-satellite text-amber-400"></i> Enter Planetary Focus Mode
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Stats Counter Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Tests Taken</span>
+            <i class="fas fa-pencil-alt text-indigo-400"></i>
+          </div>
+          <div id="stat-tests-taken" class="text-2xl font-black text-white">0</div>
+          <div class="text-[11px] text-slate-500 mt-1">Total CBT sessions</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Avg Accuracy</span>
+            <i class="fas fa-bullseye text-emerald-400"></i>
+          </div>
+          <div id="stat-avg-score" class="text-2xl font-black text-emerald-400">--</div>
+          <div class="text-[11px] text-slate-500 mt-1">Accuracy index</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Study Streak</span>
+            <i class="fas fa-fire text-amber-500"></i>
+          </div>
+          <div id="stat-streak-days" class="text-2xl font-black text-amber-400">1 🔥</div>
+          <div class="text-[11px] text-slate-500 mt-1">Consecutive days</div>
+        </div>
+
+        <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Deep Focus Time</span>
+            <i class="fas fa-hourglass-half text-purple-400"></i>
+          </div>
+          <div id="stat-study-time" class="text-2xl font-black text-purple-300">0m</div>
+          <div class="text-[11px] text-slate-500 mt-1">Planetary logged</div>
+        </div>
+
+        <div class="col-span-2 md:col-span-1 p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 backdrop-blur-md">
+          <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Pending Tasks</span>
+            <i class="fas fa-tasks text-cyan-400"></i>
+          </div>
+          <div id="stat-pending-tasks" class="text-2xl font-black text-cyan-400">2</div>
+          <div class="text-[11px] text-slate-500 mt-1">Due today</div>
+        </div>
+      </div>
+
+      <!-- Quick Action Feature Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Feature Card 1: CBT Mock Tests -->
+        <div onclick="window.examApp.switchTab('tests')" class="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-indigo-500/50 transition cursor-pointer group">
+          <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300">
+            <i class="fas fa-laptop-code"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-1 group-hover:text-indigo-300 transition">Take a Mock Test</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Full CBT simulator with realistic timer, question palette, negative marking, and instant scoring.
+          </p>
+          <div class="text-xs font-semibold text-indigo-400 flex items-center gap-1 group-hover:translate-x-1 transition">
+            Launch Test Lobby <i class="fas fa-arrow-right text-[10px]"></i>
+          </div>
+        </div>
+
+        <!-- Feature Card 2: Solar System Study Timer -->
+        <div onclick="window.examApp.switchTab('timer')" class="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-purple-500/50 transition cursor-pointer group">
+          <div class="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300">
+            <i class="fas fa-solar-system">🪐</i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-1 group-hover:text-purple-300 transition">Planetary Study Timer</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Study to the real orbital physics of our solar system. Pick your celestial orbit station, set custom intervals, and listen to binaural space drone.
+          </p>
+          <div class="text-xs font-semibold text-purple-400 flex items-center gap-1 group-hover:translate-x-1 transition">
+            Enter Celestial Station <i class="fas fa-arrow-right text-[10px]"></i>
+          </div>
+        </div>
+
+        <!-- Feature Card 3: AI Doubt Solver -->
+        <div onclick="window.examApp.switchTab('ai-doubts')" class="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 hover:border-pink-500/50 transition cursor-pointer group">
+          <div class="w-12 h-12 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition duration-300">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white mb-1 group-hover:text-pink-300 transition">AI Mentor (Gemini API)</h3>
+          <p class="text-xs text-slate-400 leading-relaxed mb-4">
+            Connect your own Google Gemini API key to solve complex derivations, clarify tricky questions, and generate high-yield study plans.
+          </p>
+          <div class="text-xs font-semibold text-pink-400 flex items-center gap-1 group-hover:translate-x-1 transition">
+            Ask AI Mentor <i class="fas fa-arrow-right text-[10px]"></i>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= VIEW 2: TAKE A TEST ================= -->
+    <section id="view-tests" class="tab-view-section hidden space-y-6">
+      
+      <!-- Lobby View -->
+      <div id="test-lobby-container">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="text-2xl font-black text-white">Mock Test Arena</h2>
+            <p class="text-xs text-slate-400">Available tests for <span class="active-exam-name-display text-indigo-400 font-semibold">JEE Main</span>. Replicating official CBT environment.</p>
+          </div>
+          <button onclick="window.examApp.switchTab('analysis')" class="self-start md:self-auto px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-medium text-slate-300 transition flex items-center gap-2">
+            <i class="fas fa-history text-indigo-400"></i> View Past Test Reports
+          </button>
+        </div>
+
+        <!-- Grid of available tests for current exam -->
+        <div id="test-lobby-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Live CBT Active Interface (Initially Hidden) -->
+      <div id="test-interface-container" class="hidden">
+        <!-- CBT Header Bar -->
+        <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-900/90 border border-slate-800 mb-6">
+          <div>
+            <h3 id="cbt-test-title" class="font-bold text-white text-base">JEE Grand Mock</h3>
+            <div id="cbt-test-subject" class="text-xs text-slate-400">Physics, Chemistry, Maths</div>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-950 border border-slate-800">
+              <i class="fas fa-stopwatch text-indigo-400 text-xs"></i>
+              <span id="cbt-timer-display" class="font-mono font-bold text-base text-white">45:00</span>
+            </div>
+            <button id="cbt-submit-test-btn" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow-lg shadow-rose-600/20">
+              Submit Test
+            </button>
+          </div>
+        </div>
+
+        <!-- Main CBT Layout: Question Area (Left) + Palette (Right) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Question Pane (8 cols) -->
+          <div class="lg:col-span-8 p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-800">
+                <span id="cbt-q-number-badge" class="px-3 py-1 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold text-xs">
+                  Question 1 of 6
+                </span>
+                <span id="cbt-q-subject-badge" class="text-xs text-slate-400 font-semibold uppercase">
+                  Physics
+                </span>
+              </div>
+
+              <!-- Question Text -->
+              <p id="cbt-question-text" class="text-base text-slate-100 font-medium leading-relaxed mb-6">
+                Loading question...
+              </p>
+
+              <!-- Options List -->
+              <div id="cbt-options-container" class="space-y-3 mb-8">
+                <!-- Dynamically rendered -->
+              </div>
+            </div>
+
+            <!-- CBT Action Footer -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-slate-800">
+              <div class="flex items-center gap-2">
+                <button id="cbt-mark-review-btn" class="px-3.5 py-2 rounded-xl bg-purple-900/30 hover:bg-purple-900/50 border border-purple-500/40 text-purple-300 text-xs font-semibold transition">
+                  <i class="fas fa-flag mr-1"></i> Mark for Review
+                </button>
+                <button id="cbt-clear-btn" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 text-xs font-semibold transition">
+                  Clear Response
+                </button>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button id="cbt-prev-btn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
+                  Previous
+                </button>
+                <button id="cbt-next-btn" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-md shadow-indigo-600/30">
+                  Save & Next
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question Palette Pane (4 cols) -->
+          <div class="lg:col-span-4 p-6 rounded-3xl bg-slate-900/80 border border-slate-800">
+            <h4 class="font-bold text-white text-sm mb-4">Question Palette</h4>
+            
+            <!-- Summary legend -->
+            <div class="grid grid-cols-3 gap-2 text-center text-[11px] mb-6 pb-4 border-b border-slate-800">
+              <div class="p-2 rounded-xl bg-emerald-950/40 border border-emerald-900">
+                <span id="cbt-count-answered" class="block font-bold text-emerald-400 text-sm">0</span>
+                <span class="text-slate-400 text-[10px]">Answered</span>
+              </div>
+              <div class="p-2 rounded-xl bg-purple-950/40 border border-purple-900">
+                <span id="cbt-count-marked" class="block font-bold text-purple-400 text-sm">0</span>
+                <span class="text-slate-400 text-[10px]">Marked</span>
+              </div>
+              <div class="p-2 rounded-xl bg-slate-800/40 border border-slate-800">
+                <span id="cbt-count-unanswered" class="block font-bold text-slate-400 text-sm">0</span>
+                <span class="text-slate-400 text-[10px]">Unanswered</span>
+              </div>
+            </div>
+
+            <!-- Numbers Grid -->
+            <div id="cbt-palette-grid" class="grid grid-cols-5 gap-2 max-h-[300px] overflow-y-auto pr-1">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= VIEW 3: ANALYSIS AFTER TEST ================= -->
+    <section id="view-analysis" class="tab-view-section hidden space-y-8">
+      
+      <!-- Container for dynamic post-test report -->
+      <div id="analysis-view-container">
+        <!-- Rendered by AnalysisEngine (either report or empty state) -->
+      </div>
+
+      <!-- Hidden Template used by AnalysisEngine -->
+      <template id="analysis-template">
+        <div id="analysis-score-card"></div>
+
+        <!-- Sectional Performance & AI Insights -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+          <div class="lg:col-span-7">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <i class="fas fa-layer-group text-indigo-400"></i> Subject-Wise Breakdown
+            </h3>
+            <div id="analysis-subject-breakdown" class="space-y-3"></div>
+          </div>
+
+          <div class="lg:col-span-5">
+            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <i class="fas fa-lightbulb text-amber-400"></i> Diagnostic Insights
+            </h3>
+            <div id="analysis-insights-container" class="space-y-4"></div>
+          </div>
+        </div>
+
+        <!-- Question-by-Question Solution Explorer -->
+        <div class="pt-6 border-t border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h3 class="text-xl font-bold text-white">Question-by-Question Solutions</h3>
+              <p class="text-xs text-slate-400">Inspect the correct answers, your selected choices, and detailed theoretical explanations.</p>
+            </div>
+            
+            <!-- Filters -->
+            <div class="flex items-center gap-1.5 p-1 bg-slate-900 rounded-xl border border-slate-800 text-xs">
+              <button class="analysis-filter-btn active-filter px-3 py-1.5 rounded-lg text-slate-300 font-semibold" data-filter="all">All</button>
+              <button class="analysis-filter-btn px-3 py-1.5 rounded-lg text-slate-300 font-semibold" data-filter="correct">Correct</button>
+              <button class="analysis-filter-btn px-3 py-1.5 rounded-lg text-slate-300 font-semibold" data-filter="incorrect">Incorrect</button>
+              <button class="analysis-filter-btn px-3 py-1.5 rounded-lg text-slate-300 font-semibold" data-filter="unattempted">Skipped</button>
+            </div>
+          </div>
+
+          <div id="analysis-questions-list" class="space-y-4"></div>
+        </div>
+
+        <!-- Past Test Records Drawer -->
+        <div class="mt-12 pt-8 border-t border-slate-800">
+          <h4 class="font-bold text-white text-base mb-4 flex items-center gap-2">
+            <i class="fas fa-clock-rotate-left text-slate-400"></i> Previous Test History
+          </h4>
+          <div id="analysis-history-list" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
+        </div>
+      </template>
+
+    </section>
+
+    <!-- ================= VIEW 4: PLANETARY STUDY TIMER ================= -->
+    <section id="view-timer" class="tab-view-section hidden space-y-6">
+      
+      <!-- Top Focus Station Banner -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-3xl bg-slate-900/60 border border-slate-800 backdrop-blur-md">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span id="active-station-badge" class="px-3 py-1 rounded-full bg-purple-500/20 border border-purple-500/40 text-purple-300 text-xs font-bold flex items-center">
+              <span class="inline-block w-2 h-2 rounded-full bg-sky-400 mr-2"></span> Earth Orbit Station
+            </span>
+            <span class="text-xs text-slate-400">• Keplerian Orbital Speeds</span>
+          </div>
+          <p id="active-station-quote" class="text-slate-300 text-xs italic font-serif">
+            "Balanced Equilibrium & Grounded Clarity"
+          </p>
+        </div>
+
+        <!-- Sound & Fullscreen controls -->
+        <div class="flex items-center gap-2">
+          <button id="timer-sound-btn" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-semibold transition flex items-center gap-2">
+            <i class="fas fa-volume-mute"></i>
+            <span class="sound-btn-text">Cosmic Sound: Muted</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Planetary Selector Bar -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap mr-2">Select Orbit:</span>
+        <button onclick="window.solarEngine.selectPlanet('mercury')" data-planet-id="mercury" class="planet-select-pill px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-600 text-xs font-semibold text-slate-300 whitespace-nowrap transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-slate-400"></span> Mercury
+        </button>
+        <button onclick="window.solarEngine.selectPlanet('venus')" data-planet-id="venus" class="planet-select-pill px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-600 text-xs font-semibold text-slate-300 whitespace-nowrap transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-400"></span> Venus
+        </button>
+        <button onclick="window.solarEngine.selectPlanet('earth')" data-planet-id="earth" class="planet-select-pill active-planet-pill px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-600 text-xs font-semibold text-slate-300 whitespace-nowrap transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-sky-400"></span> Earth
+        </button>
+        <button onclick="window.solarEngine.selectPlanet('mars')" data-planet-id="mars" class="planet-select-pill px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-600 text-xs font-semibold text-slate-300 whitespace-nowrap transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-red-400"></span> Mars
+        </button>
+        <button onclick="window.solarEngine.selectPlanet('jupiter')" data-planet-id="jupiter" class="planet-select-pill px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-600 text-xs font-semibold text-slate-300 whitespace-nowrap transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-orange-400"></span> Jupiter
+        </button>
+        <button onclick="window.solarEngine.selectPlanet('saturn')" data-planet-id="saturn" class="planet-select-pill px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-600 text-xs font-semibold text-slate-300 whitespace-nowrap transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-yellow-300"></span> Saturn
+        </button>
+        <button onclick="window.solarEngine.selectPlanet('uranus')" data-planet-id="uranus" class="planet-select-pill px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-600 text-xs font-semibold text-slate-300 whitespace-nowrap transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-cyan-400"></span> Uranus
+        </button>
+        <button onclick="window.solarEngine.selectPlanet('neptune')" data-planet-id="neptune" class="planet-select-pill px-3 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-600 text-xs font-semibold text-slate-300 whitespace-nowrap transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-blue-400"></span> Neptune
+        </button>
+      </div>
+
+      <!-- Main Interactive Space Canvas & Timer Overlay -->
+      <div class="relative w-full h-[540px] md:h-[600px] rounded-3xl bg-slate-950 border border-slate-800 overflow-hidden shadow-2xl">
+        
+        <!-- Celestial Canvas -->
+        <canvas id="solar-system-canvas" class="w-full h-full block"></canvas>
+
+        <!-- Floating Glassmorphism Timer Display Overlay (Centered) -->
+        <div class="absolute inset-x-0 bottom-6 md:bottom-8 mx-auto max-w-sm px-4 pointer-events-none">
+          <div class="p-6 rounded-3xl bg-slate-950/85 border border-indigo-500/30 backdrop-blur-xl shadow-2xl text-center pointer-events-auto">
+            
+            <!-- Circular countdown container -->
+            <div class="relative w-44 h-44 mx-auto mb-4 flex items-center justify-center">
+              <svg class="w-full h-full transform -rotate-90">
+                <circle cx="88" cy="88" r="75" stroke="rgba(255, 255, 255, 0.08)" stroke-width="8" fill="transparent" />
+                <circle id="timer-progress-ring" cx="88" cy="88" r="75" stroke="#6366f1" stroke-width="8" stroke-linecap="round" fill="transparent" stroke-dasharray="471.2" stroke-dashoffset="0" class="transition-all duration-1000" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="timer-time-display" class="font-mono text-3xl md:text-4xl font-extrabold text-white tracking-wider">60:00</span>
+                <span class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Study Session</span>
+              </div>
+            </div>
+
+            <!-- Duration Preset Badges -->
+            <div class="flex items-center justify-center gap-1.5 mb-5">
+              <button data-minutes="25" class="timer-preset-btn px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-semibold text-slate-400 hover:text-white transition">25m</button>
+              <button data-minutes="45" class="timer-preset-btn px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-semibold text-slate-400 hover:text-white transition">45m</button>
+              <button data-minutes="60" class="timer-preset-btn active-preset px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-semibold text-slate-400 hover:text-white transition">1 hr</button>
+              <button data-minutes="90" class="timer-preset-btn px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-semibold text-slate-400 hover:text-white transition">90m</button>
+              <button data-minutes="120" class="timer-preset-btn px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-semibold text-slate-400 hover:text-white transition">2 hrs</button>
+            </div>
+
+            <!-- Controls: Start / Pause / Reset -->
+            <div class="flex items-center justify-center gap-3">
+              <button id="timer-start-btn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-xs tracking-wider uppercase transition shadow-lg shadow-indigo-500/30 flex items-center gap-2">
+                <i class="fas fa-play text-[10px]"></i> Begin Focus
+              </button>
+              <button id="timer-pause-btn" class="hidden px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs tracking-wider uppercase transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
+                <i class="fas fa-pause text-[10px]"></i> Pause
+              </button>
+              <button id="timer-reset-btn" class="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition" title="Reset Session">
+                <i class="fas fa-undo"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= VIEW 5: CLEAN TASK MANAGER & NOTES ================= -->
+    <section id="view-tasks" class="tab-view-section hidden space-y-8">
+      
+      <!-- Split Layout: Tasks (Left) + Notes (Right) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left: Task Manager (6 cols) -->
+        <div class="lg:col-span-6 space-y-6">
+          <div class="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 backdrop-blur-md">
+            
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-xl font-bold text-white">Daily Aspirant Tasks</h3>
+                <p class="text-xs text-slate-400">Track high-yield goals and stay consistent.</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+                Today's Goals
+              </span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="mb-6">
+              <div class="flex justify-between text-xs text-slate-400 mb-1.5 font-medium">
+                <span>Progress</span>
+                <span id="task-progress-text">0 of 0 completed</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+                <div id="task-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-300" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <!-- Add Task Form -->
+            <div class="space-y-3 mb-6">
+              <input type="text" id="new-task-text" placeholder="Write a task (e.g., Solve 30 Physics PYQs on Optics)..." class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 text-xs text-white placeholder-slate-500 outline-none transition" />
+              
+              <div class="flex items-center gap-2">
+                <select id="new-task-priority" class="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 outline-none">
+                  <option value="high">High Priority</option>
+                  <option value="medium" selected>Medium Priority</option>
+                  <option value="low">Low Priority</option>
+                </select>
+
+                <select id="new-task-tag" class="px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 outline-none flex-1">
+                  <option value="PYQs & Practice">PYQs & Practice</option>
+                  <option value="Concept Revision">Concept Revision</option>
+                  <option value="Mock Test Analysis">Mock Test Analysis</option>
+                  <option value="Formula Sheet">Formula Sheet</option>
+                  <option value="Current Affairs">Current Affairs</option>
+                </select>
+
+                <button id="add-task-btn" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs transition shadow-md shadow-indigo-600/30">
+                  <i class="fas fa-plus mr-1"></i> Add
+                </button>
+              </div>
+            </div>
+
+            <!-- Task Filter Tabs -->
+            <div class="flex items-center gap-2 pb-4 mb-4 border-b border-slate-800 text-xs">
+              <button class="task-filter-tab active-task-tab px-3 py-1 rounded-lg text-slate-300 font-semibold" data-filter="all">All</button>
+              <button class="task-filter-tab px-3 py-1 rounded-lg text-slate-400 font-semibold" data-filter="pending">Pending</button>
+              <button class="task-filter-tab px-3 py-1 rounded-lg text-slate-400 font-semibold" data-filter="completed">Completed</button>
+            </div>
+
+            <!-- Task List Container -->
+            <div id="task-list-container" class="space-y-2.5 max-h-[380px] overflow-y-auto pr-1"></div>
+
+          </div>
+        </div>
+
+        <!-- Right: Formula & Study Notes Manager (6 cols) -->
+        <div class="lg:col-span-6 space-y-6">
+          <div id="note-editor-section" class="p-6 md:p-8 rounded-3xl bg-slate-900/80 border border-slate-800 backdrop-blur-md">
+            
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-xl font-bold text-white">Study Notes & Formula Pad</h3>
+                <p class="text-xs text-slate-400">Save shortcuts, mnemonics, and key formulas.</p>
+              </div>
+              <button id="new-note-btn" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
+                <i class="fas fa-file-circle-plus mr-1"></i> New
+              </button>
+            </div>
+
+            <!-- Note Editor -->
+            <div class="space-y-3 mb-6">
+              <input type="text" id="note-title-input" placeholder="Note Title (e.g., Carnot Engine Efficiency Formula)..." class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 transition" />
+              
+              <textarea id="note-content-input" rows="4" placeholder="Write key points, formulas, or reminders..." class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-500 outline-none focus:border-indigo-500 transition resize-none"></textarea>
+
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2">
+                  <input type="text" id="note-tag-input" placeholder="Tag (e.g. Physics)" class="w-28 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300" />
+                  
+                  <select id="note-color-select" class="px-2 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs text-slate-300">
+                    <option value="indigo">Indigo Accent</option>
+                    <option value="emerald">Emerald</option>
+                    <option value="amber">Amber</option>
+                    <option value="rose">Rose</option>
+                    <option value="cyan">Cyan</option>
+                  </select>
+                </div>
+
+                <button id="save-note-btn" class="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs transition shadow-md shadow-emerald-600/30">
+                  <i class="fas fa-save mr-1"></i> Save Note
+                </button>
+              </div>
+            </div>
+
+            <!-- Search Notes -->
+            <div class="relative mb-4">
+              <i class="fas fa-search absolute left-3.5 top-3 text-slate-500 text-xs"></i>
+              <input type="text" id="search-notes-input" placeholder="Search saved notes..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-white placeholder-slate-500 outline-none" />
+            </div>
+
+            <!-- Notes Grid Container -->
+            <div id="notes-grid-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[380px] overflow-y-auto pr-1"></div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= VIEW 6: AI EXAM MENTOR (GEMINI) ================= -->
+    <section id="view-ai-doubts" class="tab-view-section hidden space-y-6">
+      
+      <div class="max-w-4xl mx-auto rounded-3xl bg-slate-900/90 border border-slate-800 backdrop-blur-xl flex flex-col h-[650px] overflow-hidden shadow-2xl">
+        
+        <!-- Chat Header -->
+        <div class="p-4 md:p-5 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-purple-500/20">
+              <i class="fas fa-brain"></i>
+            </div>
+            <div>
+              <div class="font-bold text-white text-sm flex items-center gap-2">
+                ExamOrbit AI Doubt Solver
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">Gemini Flash</span>
+              </div>
+              <div class="text-xs text-slate-400">Ask any concept questions, numerical steps, or exam strategies</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button id="clear-chat-btn" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition text-xs" title="Clear Chat History">
+              <i class="fas fa-trash-can"></i>
+            </button>
+            <button onclick="window.aiMentor.openKeyModal()" class="px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-300 text-xs font-semibold transition">
+              <i class="fas fa-key mr-1"></i> Key Config
+            </button>
+          </div>
+        </div>
+
+        <!-- Suggestion Chips Bar -->
+        <div class="px-4 py-2 border-b border-slate-800/80 bg-slate-950/40 flex items-center gap-2 overflow-x-auto scrollbar-none">
+          <span class="text-[11px] text-slate-500 font-semibold whitespace-nowrap">Suggested:</span>
+          <button class="ai-prompt-chip px-3 py-1 rounded-full bg-slate-800/80 hover:bg-slate-800 text-slate-300 text-xs whitespace-nowrap border border-slate-700/60 transition">
+            💡 Explain Doppler Effect with formula
+          </button>
+          <button class="ai-prompt-chip px-3 py-1 rounded-full bg-slate-800/80 hover:bg-slate-800 text-slate-300 text-xs whitespace-nowrap border border-slate-700/60 transition">
+            💡 30-day revision plan for Prelims
+          </button>
+          <button class="ai-prompt-chip px-3 py-1 rounded-full bg-slate-800/80 hover:bg-slate-800 text-slate-300 text-xs whitespace-nowrap border border-slate-700/60 transition">
+            💡 Quadratic equations shortcut methods
+          </button>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div id="ai-chat-messages" class="flex-1 p-4 md:p-6 overflow-y-auto space-y-4"></div>
+
+        <!-- Chat Input Footer -->
+        <div class="p-4 border-t border-slate-800 bg-slate-950/80">
+          <div class="flex items-center gap-2">
+            <input type="text" id="ai-chat-input" placeholder="Type your doubt (e.g. How does Le Chatelier's principle apply to pressure changes?)..." class="flex-1 px-4 py-3 rounded-2xl bg-slate-900 border border-slate-800 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 text-xs md:text-sm text-white placeholder-slate-500 outline-none transition" />
+            <button id="ai-send-btn" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs transition shadow-lg shadow-purple-600/30 flex items-center gap-1.5">
+              <span>Ask</span>
+              <i class="fas fa-paper-plane text-xs"></i>
+            </button>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-2 flex items-center justify-between">
+            <span>Powered by your Google Gemini API key. Stored locally in your browser.</span>
+            <span class="text-slate-400">Press Enter to send</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= ONBOARDING MODAL ================= -->
+  <div id="onboarding-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden">
+    <div class="max-w-2xl w-full rounded-3xl bg-slate-900 border border-slate-800 p-6 md:p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+      
+      <div class="text-center">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-2xl shadow-xl shadow-indigo-500/25">
+          <i class="fas fa-compass"></i>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-extrabold text-white">Welcome to ExamOrbit</h2>
+        <p class="text-xs md:text-sm text-slate-400 mt-1 max-w-md mx-auto">
+          India's tailored preparation portal. Enter your details to calibrate your mock test papers and celestial focus timer.
+        </p>
+      </div>
+
+      <!-- Name Input -->
+      <div>
+        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">What is your Name / Aspirant Alias?</label>
+        <input type="text" id="onboarding-student-name" placeholder="e.g. Aryan Sharma" class="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-500 focus:border-indigo-500 outline-none transition" />
+      </div>
+
+      <!-- Exam Selection -->
+      <div>
+        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Which Competitive Exam are you preparing for?</label>
+        <div id="onboarding-exam-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[280px] overflow-y-auto pr-1">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <button id="complete-onboarding-btn" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-sm tracking-wide transition shadow-xl shadow-indigo-500/30">
+        Enter Your Study Station <i class="fas fa-rocket ml-2"></i>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- ================= EXAM SWITCHER MODAL ================= -->
+  <div id="switch-exam-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden">
+    <div class="max-w-lg w-full rounded-3xl bg-slate-900 border border-slate-800 p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="font-bold text-white text-base">Select Your Target Exam</h3>
+        <button id="close-switch-modal-btn" class="text-slate-400 hover:text-white p-1 text-sm">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div id="switch-exam-list" class="space-y-2">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= GEMINI API KEY MODAL ================= -->
+  <div id="gemini-api-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden">
+    <div class="max-w-md w-full rounded-3xl bg-slate-900 border border-slate-800 p-6 md:p-8 shadow-2xl space-y-5">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center">
+            <i class="fas fa-key text-lg"></i>
+          </div>
+          <h3 class="font-bold text-white text-base">Google Gemini API Key</h3>
+        </div>
+        <button onclick="window.aiMentor.closeKeyModal()" class="text-slate-400 hover:text-white p-1">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-300 leading-relaxed">
+        To power the AI Doubt Solver, insert your personal Gemini API key. Your key is stored securely in your browser's <code class="text-indigo-400 font-mono">localStorage</code> and is never transmitted to any third-party server.
+      </p>
+
+      <div class="p-3.5 rounded-2xl bg-indigo-950/30 border border-indigo-500/20 text-[11px] text-indigo-300 leading-relaxed">
+        <strong>How to get a FREE key:</strong>
+        <ol class="list-decimal list-inside mt-1 space-y-1">
+          <li>Visit <a href="https://aistudio.google.com/" target="_blank" class="text-indigo-400 underline font-semibold">Google AI Studio (aistudio.google.com)</a></li>
+          <li>Sign in with your Google Account</li>
+          <li>Click <strong>"Get API Key"</strong> &gt; <strong>"Create API key"</strong></li>
+          <li>Paste the key below</li>
+        </ol>
+      </div>
+
+      <div>
+        <label class="block text-xs font-semibold text-slate-400 mb-1.5">Paste API Key:</label>
+        <input type="password" id="gemini-api-input" placeholder="AIzaSy..." class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder-slate-600 focus:border-indigo-500 outline-none font-mono" />
+      </div>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button onclick="window.aiMentor.closeKeyModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">
+          Cancel
+        </button>
+        <button id="save-gemini-key-btn" class="px-5 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 text-white font-bold text-xs transition shadow-lg shadow-indigo-500/25">
+          Save & Connect Key
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules in proper dependency order -->
+  <script src="js/mock-tests-data.js"></script>
+  <script src="js/solar-system.js"></script>
+  <script src="js/test-engine.js"></script>
+  <script src="js/analysis-engine.js"></script>
+  <script src="js/tasks-notes.js"></script>
+  <script src="js/ai-chat.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -89,9 +89,6 @@ class TestPulseApp {
           <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
             ${exam.tag}
           </span>
-          <div class="w-4 h-4 rounded-full border border-slate-600 peer-checked:border-indigo-500 peer-checked:bg-indigo-500 flex items-center justify-center">
-            <div class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100"></div>
-          </div>
         </div>
         <div class="font-bold text-white text-sm group-hover:text-indigo-300 transition">${exam.name}</div>
         <div class="text-xs text-slate-400 mt-1">${exam.desc}</div>

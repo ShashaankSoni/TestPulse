@@ -544,29 +544,45 @@
       </div>
 
       <!-- Main Interactive Space Canvas & Timer Overlay -->
-      <div class="relative w-full h-[540px] md:h-[600px] rounded-3xl bg-slate-950 border border-slate-800 overflow-hidden shadow-2xl">
+      <div id="celestial-observatory-container" class="relative w-full h-[580px] md:h-[660px] rounded-3xl bg-slate-950 border border-slate-800 overflow-hidden shadow-2xl transition-all duration-300">
         
         <!-- Celestial Canvas -->
         <canvas id="solar-system-canvas" class="w-full h-full block"></canvas>
 
-        <!-- Floating Glassmorphism Timer Display Overlay (Centered) -->
-        <div class="absolute inset-x-0 bottom-6 md:bottom-8 mx-auto max-w-sm px-4 pointer-events-none">
-          <div class="p-6 rounded-3xl bg-slate-950/85 border border-indigo-500/30 backdrop-blur-xl shadow-2xl text-center pointer-events-auto">
+        <!-- Top Status Bar & Exit Fullscreen Controls -->
+        <div class="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none z-20">
+          <div class="pointer-events-auto flex items-center gap-2">
+            <span id="active-station-badge-fs" class="px-3 py-1.5 rounded-full bg-slate-950/80 border border-indigo-500/30 text-indigo-300 text-xs font-bold backdrop-blur-md flex items-center shadow-lg">
+              <span class="inline-block w-2 h-2 rounded-full bg-sky-400 mr-2"></span> Earth Orbit Station
+            </span>
+          </div>
+
+          <div class="pointer-events-auto flex items-center gap-2">
+            <button id="toggle-fullscreen-btn" class="px-3.5 py-1.5 rounded-xl bg-slate-950/80 hover:bg-slate-900 border border-slate-700 text-slate-300 text-xs font-semibold backdrop-blur-md transition flex items-center gap-1.5 shadow-lg">
+              <i class="fas fa-expand text-indigo-400"></i>
+              <span class="fs-btn-text">Full Screen</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Floating Glassmorphism Timer Display Overlay (Docked on the SIDE so all planets are 100% visible) -->
+        <div id="timer-dock-container" class="absolute right-4 md:right-6 bottom-4 md:bottom-auto md:top-1/2 md:-translate-y-1/2 w-72 sm:w-80 pointer-events-none z-20 transition-all duration-300">
+          <div class="p-5 md:p-6 rounded-3xl bg-slate-950/85 border border-indigo-500/30 backdrop-blur-xl shadow-2xl text-center pointer-events-auto">
             
             <!-- Circular countdown container -->
-            <div class="relative w-44 h-44 mx-auto mb-4 flex items-center justify-center">
+            <div class="relative w-40 h-40 mx-auto mb-3 flex items-center justify-center">
               <svg class="w-full h-full transform -rotate-90">
-                <circle cx="88" cy="88" r="75" stroke="rgba(255, 255, 255, 0.08)" stroke-width="8" fill="transparent" />
-                <circle id="timer-progress-ring" cx="88" cy="88" r="75" stroke="#6366f1" stroke-width="8" stroke-linecap="round" fill="transparent" stroke-dasharray="471.2" stroke-dashoffset="0" class="transition-all duration-1000" />
+                <circle cx="80" cy="80" r="68" stroke="rgba(255, 255, 255, 0.08)" stroke-width="7" fill="transparent" />
+                <circle id="timer-progress-ring" cx="80" cy="80" r="68" stroke="#6366f1" stroke-width="7" stroke-linecap="round" fill="transparent" stroke-dasharray="427.2" stroke-dashoffset="0" class="transition-all duration-1000" />
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span id="timer-time-display" class="font-mono text-3xl md:text-4xl font-extrabold text-white tracking-wider">60:00</span>
-                <span class="text-[10px] text-slate-400 uppercase tracking-widest mt-1">Study Session</span>
+                <span id="timer-time-display" class="font-mono text-3xl font-extrabold text-white tracking-wider">60:00</span>
+                <span class="text-[10px] text-slate-400 uppercase tracking-widest mt-0.5">Study Session</span>
               </div>
             </div>
 
             <!-- Duration Preset Badges -->
-            <div class="flex items-center justify-center gap-1.5 mb-5">
+            <div class="flex items-center justify-center gap-1.5 mb-4">
               <button data-minutes="25" class="timer-preset-btn px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-semibold text-slate-400 hover:text-white transition">25m</button>
               <button data-minutes="45" class="timer-preset-btn px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-semibold text-slate-400 hover:text-white transition">45m</button>
               <button data-minutes="60" class="timer-preset-btn active-preset px-2.5 py-1 rounded-lg border border-slate-800 text-[11px] font-semibold text-slate-400 hover:text-white transition">1 hr</button>
@@ -576,10 +592,10 @@
 
             <!-- Controls: Start / Pause / Reset -->
             <div class="flex items-center justify-center gap-3">
-              <button id="timer-start-btn" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-xs tracking-wider uppercase transition shadow-lg shadow-indigo-500/30 flex items-center gap-2">
+              <button id="timer-start-btn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold text-xs tracking-wider uppercase transition shadow-lg shadow-indigo-500/30 flex items-center gap-2">
                 <i class="fas fa-play text-[10px]"></i> Begin Focus
               </button>
-              <button id="timer-pause-btn" class="hidden px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs tracking-wider uppercase transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
+              <button id="timer-pause-btn" class="hidden px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs tracking-wider uppercase transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
                 <i class="fas fa-pause text-[10px]"></i> Pause
               </button>
               <button id="timer-reset-btn" class="px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs transition" title="Reset Session">

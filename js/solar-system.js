@@ -151,7 +151,9 @@ class SolarSystemEngine {
   }
 
   resize() {
-    const rect = this.canvas.parentElement.getBoundingClientRect();
+    const parent = this.canvas.parentElement;
+    if (!parent) return;
+    const rect = parent.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
     this.width = rect.width;
     this.height = Math.max(rect.height, 460);
@@ -160,12 +162,17 @@ class SolarSystemEngine {
     this.canvas.style.width = `${this.width}px`;
     this.canvas.style.height = `${this.height}px`;
     this.ctx.scale(dpr, dpr);
-    this.cx = this.width / 2;
+
+    // On wider displays where timer is docked on the right side, shift center slightly left
+    // so planets have completely open viewing space and are 100% visible during 360 rotation
+    const isWide = this.width >= 860;
+    const availableWidth = isWide ? (this.width - 280) : this.width;
+    this.cx = isWide ? (availableWidth / 2 + 10) : (this.width / 2);
     this.cy = this.height / 2;
 
-    // Scale orbits dynamically so Neptune fits on smaller screens
-    const minDim = Math.min(this.width, this.height);
-    this.scaleFactor = Math.max(0.45, Math.min(1.05, minDim / 660));
+    // Scale orbits dynamically so Neptune (orbitDistance = 310) fits comfortably with safety margin!
+    const minDim = Math.min(availableWidth, this.height);
+    this.scaleFactor = Math.max(0.35, Math.min(0.92, (minDim - 40) / 640));
   }
 
   generateStarfield() {
@@ -537,8 +544,12 @@ class StudyTimer {
     this.resetBtn = document.getElementById('timer-reset-btn');
     this.progressRing = document.getElementById('timer-progress-ring');
     this.stationBadge = document.getElementById('active-station-badge');
+    this.stationBadgeFs = document.getElementById('active-station-badge-fs');
     this.stationQuote = document.getElementById('active-station-quote');
     this.soundToggleBtn = document.getElementById('timer-sound-btn');
+    this.observatoryContainer = document.getElementById('celestial-observatory-container');
+    this.toggleFsBtn = document.getElementById('toggle-fullscreen-btn');
+    this.isFsMode = false;
   }
 
   bindEvents() {
@@ -551,6 +562,23 @@ class StudyTimer {
     if (this.resetBtn) {
       this.resetBtn.addEventListener('click', () => this.reset());
     }
+    if (this.toggleFsBtn) {
+      this.toggleFsBtn.addEventListener('click', () => this.toggleFullscreen());
+    }
+
+    // Keyboard ESC to exit fullscreen
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && this.isFsMode) {
+        this.exitFullscreen();
+      }
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && this.isFsMode) {
+        this.exitFullscreen();
+      }
+    });
+
     if (this.soundToggleBtn) {
       this.soundToggleBtn.addEventListener('click', () => {
         const isPlaying = this.soundscape.toggleSound();
@@ -579,6 +607,61 @@ class StudyTimer {
     });
   }
 
+  toggleFullscreen() {
+    if (this.isFsMode) {
+      this.exitFullscreen();
+    } else {
+      this.enterFullscreen();
+    }
+  }
+
+  enterFullscreen() {
+    this.isFsMode = true;
+    if (this.observatoryContainer) {
+      this.observatoryContainer.classList.add('celestial-fullscreen');
+      try {
+        if (this.observatoryContainer.requestFullscreen && !document.fullscreenElement) {
+          this.observatoryContainer.requestFullscreen().catch(() => {});
+        }
+      } catch (e) {}
+    }
+
+    if (this.toggleFsBtn) {
+      this.toggleFsBtn.innerHTML = `<i class="fas fa-compress text-amber-400"></i> <span class="fs-btn-text">Exit Focus</span>`;
+      this.toggleFsBtn.classList.add('border-amber-500/50', 'bg-amber-500/10');
+    }
+
+    // Recalibrate and resize canvas immediately
+    setTimeout(() => {
+      if (this.solarEngine) this.solarEngine.resize();
+    }, 50);
+    setTimeout(() => {
+      if (this.solarEngine) this.solarEngine.resize();
+    }, 250);
+  }
+
+  exitFullscreen() {
+    this.isFsMode = false;
+    if (this.observatoryContainer) {
+      this.observatoryContainer.classList.remove('celestial-fullscreen');
+      try {
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+      } catch (e) {}
+    }
+
+    if (this.toggleFsBtn) {
+      this.toggleFsBtn.innerHTML = `<i class="fas fa-expand text-indigo-400"></i> <span class="fs-btn-text">Full Screen</span>`;
+      this.toggleFsBtn.classList.remove('border-amber-500/50', 'bg-amber-500/10');
+    }
+
+    // Restore canvas bounds
+    setTimeout(() => {
+      if (this.solarEngine) this.solarEngine.resize();
+    }, 50);
+  }
+
   setDuration(minutes) {
     this.pause();
     this.totalSeconds = minutes * 60;
@@ -591,6 +674,9 @@ class StudyTimer {
     this.isRunning = true;
     if (this.startBtn) this.startBtn.classList.add('hidden');
     if (this.pauseBtn) this.pauseBtn.classList.remove('hidden');
+
+    // Automatically expand to full screen when "Begin Focus" is clicked
+    this.enterFullscreen();
 
     this.timerInterval = setInterval(() => {
       if (this.remainingSeconds > 0) {
@@ -617,6 +703,7 @@ class StudyTimer {
 
   onFinish() {
     this.pause();
+    this.exitFullscreen();
     this.soundscape.playChime();
     const minutesStudied = Math.round(this.totalSeconds / 60);
     
@@ -641,9 +728,9 @@ class StudyTimer {
     // Update document title for easy tab monitoring
     document.title = this.isRunning ? `(${formatted}) Study Session | TestPulse` : 'TestPulse - Competitive Exam Prep';
 
-    // SVG Progress ring update
+    // SVG Progress ring update (r=68, circumference = 2π×68 ≈ 427.3)
     if (this.progressRing) {
-      const circumference = 2 * Math.PI * 135;
+      const circumference = 2 * Math.PI * 68;
       const progress = (this.totalSeconds - this.remainingSeconds) / this.totalSeconds;
       const strokeDashoffset = circumference - progress * circumference;
       this.progressRing.style.strokeDashoffset = strokeDashoffset;
@@ -653,6 +740,10 @@ class StudyTimer {
   onPlanetSelected(planet) {
     if (this.stationBadge) {
       this.stationBadge.innerHTML = `<span class="inline-block w-2.5 h-2.5 rounded-full mr-2" style="background:${planet.color}"></span> ${planet.name} Orbit Station`;
+    }
+    // Also update the fullscreen overlay badge
+    if (this.stationBadgeFs) {
+      this.stationBadgeFs.innerHTML = `<span class="inline-block w-2 h-2 rounded-full mr-1.5" style="background:${planet.color}"></span> ${planet.name} Orbit Station`;
     }
     if (this.stationQuote) {
       this.stationQuote.textContent = `"${planet.focusVibe}"`;

@@ -178,6 +178,20 @@ html.light ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
+/* Fullscreen Planetary Observatory Mode */
+.celestial-fullscreen {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 0 !important;
+  border: none !important;
+  z-index: 9999 !important;
+  background: #030712 !important;
+}
+
 /* Subtle Orbit Background Animation */
 @keyframes celestial-drift {
   0% { transform: rotate(0deg); }

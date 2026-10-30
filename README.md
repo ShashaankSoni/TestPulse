@@ -1,4 +1,4 @@
-# 🪐 ExamOrbit — India's Premier Competitive Exam & Celestial Study Station
+# ⚡ TestPulse — India's Premier Competitive Exam & Celestial Study Station
 
 A modern web application crafted for Indian students preparing for competitive exams like **JEE (Main & Advanced), NEET UG, UPSC Civil Services, CAT, GATE, SSC CGL, Banking (IBPS/SBI), and CLAT**.
 
@@ -107,7 +107,7 @@ Then open [http://localhost:3000](http://localhost:3000) in your browser.
 2. Sign in with any Google account.
 3. Click on the blue **"Get API key"** button on the left sidebar.
 4. Click **"Create API key"** and copy your generated key (`AIzaSy...`).
-5. In the ExamOrbit website, click the **"Gemini Key"** button in the top navigation bar, paste your key, and click **"Save & Connect Key"**.
+5. In the TestPulse website, click the **"Gemini Key"** button in the top navigation bar, paste your key, and click **"Save & Connect Key"**.
 6. That's it! Your AI Exam Mentor is now active.
 
 ---

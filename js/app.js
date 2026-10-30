@@ -1,6 +1,6 @@
-// ExamOrbit - Main Application Controller & State Coordinator
+// TestPulse - Main Application Controller & State Coordinator
 
-class ExamOrbitApp {
+class TestPulseApp {
   constructor() {
     this.currentStudent = null;
     this.currentExam = null;
@@ -91,7 +91,7 @@ class ExamOrbitApp {
     this.renderExamLobby();
 
     if (window.showToast) {
-      window.showToast(`🚀 Welcome, ${name}! Your preparation portal for ${this.currentExam.name} is ready.`, 'success');
+      window.showToast(`🚀 Welcome, ${name}! Your preparation portal on TestPulse for ${this.currentExam.name} is ready.`, 'success');
     }
   }
 
@@ -377,7 +377,7 @@ window.showToast = function(message, type = 'info') {
 
 // Application Bootstrap
 document.addEventListener('DOMContentLoaded', () => {
-  window.examApp = new ExamOrbitApp();
+  window.examApp = new TestPulseApp();
   window.studyTimerApp = new StudyTimer();
   window.solarEngine = new SolarSystemEngine('solar-system-canvas');
   window.studyTimerApp.solarEngine = window.solarEngine;

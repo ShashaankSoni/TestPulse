@@ -1,4 +1,4 @@
-// ExamOrbit - AI Doubt Solver & Exam Mentor powered by Google Gemini API
+// TestPulse - AI Doubt Solver & Exam Mentor powered by Google Gemini API
 
 class AIMentorChat {
   constructor() {
@@ -112,7 +112,7 @@ class AIMentorChat {
         this.messages = [
           {
             role: 'assistant',
-            content: `Namaste Aspirant! 🙏 I am your **ExamOrbit AI Mentor**, specialized in cracking Indian competitive exams like **JEE, NEET, UPSC, CAT, GATE, SSC & Banking**.\n\nAsk me any concept doubts, tough problem steps, formula derivations, or time management tips!\n\n*(Note: Make sure to click **"Set Gemini Key"** in the top right to link your free Google Gemini API key).*`
+            content: `Namaste Aspirant! 🙏 I am your **TestPulse AI Mentor**, specialized in cracking Indian competitive exams like **JEE, NEET, UPSC, CAT, GATE, SSC & Banking**.\n\nAsk me any concept doubts, tough problem steps, formula derivations, or time management tips!\n\n*(Note: Make sure to click **"Set Gemini Key"** in the top right to link your free Google Gemini API key).*`
           }
         ];
       }
@@ -180,7 +180,7 @@ class AIMentorChat {
   async callGeminiAPI(promptText) {
     const examName = window.examApp?.currentExam?.name || 'Indian Competitive Exams (JEE/UPSC/CAT)';
 
-    const systemInstruction = `You are "ExamOrbit AI", an elite academic mentor and coach for Indian competitive exams (${examName}).
+    const systemInstruction = `You are "TestPulse AI", an elite academic mentor and coach for Indian competitive exams (${examName}).
 You have master-level expertise in Mathematics, Physics, Chemistry, Biology, General Studies (Polity, History, Economy), Quantitative Aptitude, Logical Reasoning, and English.
 Guidelines:
 1. Provide accurate, crystal-clear, step-by-step solutions to numericals and conceptual doubts.

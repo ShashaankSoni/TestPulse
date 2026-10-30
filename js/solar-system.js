@@ -639,7 +639,7 @@ class StudyTimer {
     }
 
     // Update document title for easy tab monitoring
-    document.title = this.isRunning ? `(${formatted}) Study Session | ExamOrbit` : 'ExamOrbit - Competitive Exam Prep';
+    document.title = this.isRunning ? `(${formatted}) Study Session | TestPulse` : 'TestPulse - Competitive Exam Prep';
 
     // SVG Progress ring update
     if (this.progressRing) {

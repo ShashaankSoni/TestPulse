@@ -1,5 +1,5 @@
 {
-  "name": "exam-orbit",
+  "name": "testpulse",
   "version": "1.0.0",
   "description": "India's Premier Competitive Exam & Planetary Study Station for JEE, NEET, UPSC, CAT, GATE, and Banking",
   "main": "index.html",
@@ -19,6 +19,6 @@
     "gemini-ai",
     "education"
   ],
-  "author": "ExamOrbit",
+  "author": "TestPulse",
   "license": "MIT"
 }

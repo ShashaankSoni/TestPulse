@@ -214,46 +214,96 @@ class TestPulseApp {
     if (mobileSidebar) mobileSidebar.classList.add('hidden');
   }
 
-  renderExamLobby() {
+  renderExamLobby(filter = null) {
+    if (filter) this.currentLobbyFilter = filter;
+    if (!this.currentLobbyFilter) this.currentLobbyFilter = 'all';
+
     const lobby = document.getElementById('test-lobby-grid');
     if (!lobby || !this.currentExam) return;
 
     const examKey = this.currentExam.id;
     const examData = EXAM_DATA[examKey] || EXAM_DATA.jee;
+    const allTests = examData.tests || [];
 
-    lobby.innerHTML = examData.tests.map(test => `
-      <div class="p-6 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/40 transition duration-300 flex flex-col justify-between backdrop-blur-md group">
-        <div>
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
-              ${examData.name}
-            </span>
-            <span class="text-xs text-slate-400 flex items-center gap-1">
-              <i class="fas fa-clock"></i> ${test.questions.length * 3} mins
-            </span>
-          </div>
+    // Update total count
+    const countEl = document.getElementById('count-all-tests');
+    if (countEl) countEl.textContent = allTests.length;
 
-          <h3 class="text-lg font-bold text-white group-hover:text-indigo-300 transition mb-2">${test.title}</h3>
-          <p class="text-xs text-slate-400 mb-6 leading-relaxed">${test.subject}</p>
+    // Filter tests
+    const filteredTests = allTests.filter(t => {
+      if (this.currentLobbyFilter === 'all') return true;
+      if (this.currentLobbyFilter === 'PYQ') return t.examCategory === 'PYQ' || !!t.year;
+      if (this.currentLobbyFilter === 'Full Pattern Mock') return t.examCategory === 'Full Pattern Mock';
+      if (this.currentLobbyFilter === 'Sectional Drill') return t.examCategory === 'Sectional Drill';
+      if (this.currentLobbyFilter === 'Custom Upload') return t.examCategory === 'Custom Upload' || t.id.startsWith('custom-');
+      return true;
+    });
 
-          <div class="grid grid-cols-2 gap-2 text-center text-xs mb-6">
-            <div class="p-2.5 rounded-xl bg-slate-800/60 border border-slate-800">
-              <div class="text-white font-bold text-sm">${test.questions.length}</div>
-              <div class="text-slate-400 text-[10px]">Questions</div>
-            </div>
-            <div class="p-2.5 rounded-xl bg-slate-800/60 border border-slate-800">
-              <div class="text-emerald-400 font-bold text-sm">+${examData.markingScheme.correct} / ${examData.markingScheme.incorrect}</div>
-              <div class="text-slate-400 text-[10px]">Marking Scheme</div>
-            </div>
-          </div>
+    if (filteredTests.length === 0) {
+      lobby.innerHTML = `
+        <div class="col-span-full py-16 text-center bg-slate-900/40 border border-slate-800 rounded-3xl">
+          <i class="fas fa-file-circle-question text-3xl text-slate-600 mb-3 block"></i>
+          <p class="text-sm text-slate-300 font-semibold mb-2">No tests found in this category.</p>
+          <p class="text-xs text-slate-500 mb-4">Click "Upload Paper (PDF / Quiz)" to add your own question paper!</p>
+          <button onclick="window.pdfQuizEngine.openUploadModal()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold">
+            Upload PDF Now
+          </button>
         </div>
+      `;
+      return;
+    }
 
-        <button onclick="window.cbtEngine.startTest('${examKey}', '${test.id}')" 
-          class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold text-xs tracking-wide transition shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2">
-          <i class="fas fa-play text-[10px]"></i> Launch Exam CBT
-        </button>
-      </div>
-    `).join('');
+    lobby.innerHTML = filteredTests.map(test => {
+      const isPYQ = !!test.year || test.examCategory === 'PYQ';
+      const categoryBadge = isPYQ 
+        ? `<span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40"><i class="fas fa-scroll mr-1"></i> ${test.year ? test.year + ' Official PYQ' : 'Past Year Paper'}</span>`
+        : `<span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">${test.examCategory || 'Grand Mock'}</span>`;
+
+      return `
+        <div class="p-6 rounded-3xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/40 transition duration-300 flex flex-col justify-between backdrop-blur-md group">
+          <div>
+            <div class="flex items-center justify-between gap-2 mb-3">
+              ${categoryBadge}
+              <span class="text-xs text-slate-400 flex items-center gap-1">
+                <i class="fas fa-clock"></i> ${test.durationMinutes || 60} mins
+              </span>
+            </div>
+
+            <h3 class="text-base font-bold text-white group-hover:text-indigo-300 transition mb-2">${test.title}</h3>
+            <p class="text-xs text-slate-400 mb-6 leading-relaxed">${test.subject}</p>
+
+            <div class="grid grid-cols-2 gap-2 text-center text-xs mb-6">
+              <div class="p-2.5 rounded-xl bg-slate-800/60 border border-slate-800">
+                <div class="text-white font-bold text-sm">${test.questions.length}</div>
+                <div class="text-slate-400 text-[10px]">Questions</div>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-800/60 border border-slate-800">
+                <div class="text-emerald-400 font-bold text-sm">+${examData.markingScheme.correct} / ${examData.markingScheme.incorrect}</div>
+                <div class="text-slate-400 text-[10px]">Marking Scheme</div>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="window.cbtEngine.startTest('${examKey}', '${test.id}')" 
+            class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold text-xs tracking-wide transition shadow-lg shadow-indigo-500/25 flex items-center justify-center gap-2">
+            <i class="fas fa-play text-[10px]"></i> Launch Exam CBT
+          </button>
+        </div>
+      `;
+    }).join('');
+
+    // Re-bind category tabs
+    document.querySelectorAll('.test-category-tab').forEach(tab => {
+      tab.onclick = (e) => {
+        document.querySelectorAll('.test-category-tab').forEach(t => {
+          t.classList.remove('active-filter', 'bg-indigo-600', 'text-white', 'border-indigo-500');
+          t.classList.add('border-slate-800', 'bg-slate-900/80', 'text-slate-300');
+        });
+        e.currentTarget.classList.add('active-filter', 'bg-indigo-600', 'text-white', 'border-indigo-500');
+        e.currentTarget.classList.remove('border-slate-800', 'bg-slate-900/80', 'text-slate-300');
+        this.renderExamLobby(e.currentTarget.dataset.category);
+      };
+    });
   }
 
   updateDashboardStats() {
@@ -437,6 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.studyTimerApp.solarEngine = window.solarEngine;
   window.cbtEngine = new CBTTestEngine();
   window.analysisEngine = new AnalysisEngine();
+  window.pdfQuizEngine = new PDFQuizEngine();
   window.taskManager = new TaskAndNotesManager();
   window.aiMentor = new AIMentorChat();
 });

@@ -48,6 +48,19 @@ class CBTTestEngine {
     if (this.submitBtn) this.submitBtn.addEventListener('click', () => this.confirmSubmit());
   }
 
+  exitTest() {
+    if (confirm("Are you sure you want to exit this mock test? Your progress will be discarded.")) {
+      clearInterval(this.timerInterval);
+      this.isTestActive = false;
+      if (this.container) this.container.classList.add('hidden');
+      if (this.lobbyContainer) this.lobbyContainer.classList.remove('hidden');
+      if (window.examApp) {
+        window.examApp.switchTab('tests');
+        window.examApp.renderExamLobby();
+      }
+    }
+  }
+
   startTest(examKey, testId) {
     const exam = EXAM_DATA[examKey] || EXAM_DATA.jee;
     const test = exam.tests.find(t => t.id === testId) || exam.tests[0];
@@ -277,8 +290,11 @@ class CBTTestEngine {
     // Save to test history in localStorage
     this.saveTestHistory(result);
 
-    // Hide test view, switch to Analysis View
+    // Reset CBT container and restore lobby visibility for future tests
     if (this.container) this.container.classList.add('hidden');
+    if (this.lobbyContainer) this.lobbyContainer.classList.remove('hidden');
+
+    // Smooth switch to Analysis View
     if (window.examApp) {
       window.examApp.switchTab('analysis');
       if (window.analysisEngine) {

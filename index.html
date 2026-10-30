@@ -37,6 +37,9 @@
     }
   </script>
 
+  <!-- PDF.js library for in-browser PDF question extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
   <!-- Custom Styles -->
   <link rel="stylesheet" href="css/styles.css" />
 </head>
@@ -276,8 +279,35 @@
             <h2 class="text-2xl font-black text-white">Mock Test Arena</h2>
             <p class="text-xs text-slate-400">Available tests for <span class="active-exam-name-display text-indigo-400 font-semibold">JEE Main</span>. Replicating official CBT environment.</p>
           </div>
-          <button onclick="window.examApp.switchTab('analysis')" class="self-start md:self-auto px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-medium text-slate-300 transition flex items-center gap-2">
-            <i class="fas fa-history text-indigo-400"></i> View Past Test Reports
+          
+          <div class="flex items-center gap-2">
+            <!-- Upload PDF Question Paper Button -->
+            <button onclick="window.pdfQuizEngine.openUploadModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold transition shadow-lg shadow-purple-600/25 flex items-center gap-2">
+              <i class="fas fa-file-pdf"></i> Upload Paper (PDF / Quiz)
+            </button>
+
+            <button onclick="window.examApp.switchTab('analysis')" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-medium text-slate-300 transition flex items-center gap-2">
+              <i class="fas fa-history text-indigo-400"></i> Past Reports
+            </button>
+          </div>
+        </div>
+
+        <!-- Test Category Filter Tabs -->
+        <div class="flex items-center gap-2 overflow-x-auto pb-2 mb-6 scrollbar-none text-xs">
+          <button class="test-category-tab active-filter px-3.5 py-1.5 rounded-xl border border-indigo-500 bg-indigo-600 text-white font-semibold whitespace-nowrap transition" data-category="all">
+            All Tests (<span id="count-all-tests">0</span>)
+          </button>
+          <button class="test-category-tab px-3.5 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-700 text-slate-300 font-semibold whitespace-nowrap transition" data-category="Full Pattern Mock">
+            🎯 Full Pattern Mocks (75 / 100 / 180 Qs)
+          </button>
+          <button class="test-category-tab px-3.5 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-700 text-slate-300 font-semibold whitespace-nowrap transition" data-category="PYQ">
+            📜 5-Year PYQs (2020-2024)
+          </button>
+          <button class="test-category-tab px-3.5 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-700 text-slate-300 font-semibold whitespace-nowrap transition" data-category="Sectional Drill">
+            ⚡ Sectional Practice
+          </button>
+          <button class="test-category-tab px-3.5 py-1.5 rounded-xl border border-slate-800 bg-slate-900/80 hover:border-slate-700 text-slate-300 font-semibold whitespace-nowrap transition" data-category="Custom Upload">
+            📄 Uploaded Papers
           </button>
         </div>
 
@@ -295,7 +325,10 @@
             <h3 id="cbt-test-title" class="font-bold text-white text-base">JEE Grand Mock</h3>
             <div id="cbt-test-subject" class="text-xs text-slate-400">Physics, Chemistry, Maths</div>
           </div>
-          <div class="flex items-center gap-4">
+          <div class="flex items-center gap-3">
+            <button onclick="window.cbtEngine.exitTest()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition" title="Exit to Lobby">
+              <i class="fas fa-arrow-left mr-1"></i> Exit
+            </button>
             <div class="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-950 border border-slate-800">
               <i class="fas fa-stopwatch text-indigo-400 text-xs"></i>
               <span id="cbt-timer-display" class="font-mono font-bold text-base text-white">45:00</span>
@@ -388,13 +421,23 @@
     <!-- ================= VIEW 3: ANALYSIS AFTER TEST ================= -->
     <section id="view-analysis" class="tab-view-section hidden space-y-8">
       
-      <!-- Container for dynamic post-test report -->
-      <div id="analysis-view-container">
-        <!-- Rendered by AnalysisEngine (either report or empty state) -->
+      <!-- Empty State Wrapper (Shown if no test has been submitted yet) -->
+      <div id="analysis-empty-wrapper" class="p-12 text-center bg-slate-900/60 border border-slate-800 rounded-3xl backdrop-blur-md max-w-2xl mx-auto my-12">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-3xl">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-white mb-2">No Test Analysis Available Yet</h3>
+        <p class="text-slate-400 mb-8 max-w-md mx-auto text-sm leading-relaxed">
+          Take a mock test from the "Take a Test" arena to generate your verified scorecard, accuracy %, subject mastery, and question explanations.
+        </p>
+        <button onclick="window.examApp.switchTab('tests')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold transition shadow-lg shadow-indigo-500/25">
+          <i class="fas fa-pen-nib mr-2"></i> Launch a Mock Test
+        </button>
       </div>
 
-      <!-- Hidden Template used by AnalysisEngine -->
-      <template id="analysis-template">
+      <!-- Verified Report Active Wrapper (Always ready in DOM, never goes blank!) -->
+      <div id="analysis-report-wrapper" class="space-y-8 hidden">
+        <!-- Score Card Container -->
         <div id="analysis-score-card"></div>
 
         <!-- Sectional Performance & AI Insights -->
@@ -419,7 +462,7 @@
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
               <h3 class="text-xl font-bold text-white">Question-by-Question Solutions</h3>
-              <p class="text-xs text-slate-400">Inspect the correct answers, your selected choices, and detailed theoretical explanations.</p>
+              <p class="text-xs text-slate-400">Inspect the correct answers, your chosen options, and detailed theoretical explanations.</p>
             </div>
             
             <!-- Filters -->
@@ -441,7 +484,7 @@
           </h4>
           <div id="analysis-history-list" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
         </div>
-      </template>
+      </div>
 
     </section>
 
@@ -865,8 +908,73 @@
     </div>
   </div>
 
+  <!-- ================= PDF & FILE UPLOAD QUIZ MODAL ================= -->
+  <div id="pdf-upload-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden">
+    <div class="max-w-xl w-full rounded-3xl bg-slate-900 border border-slate-800 p-6 md:p-8 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+      
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">
+            <i class="fas fa-file-pdf"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-white text-base">Convert Paper (PDF) to Quiz</h3>
+            <p class="text-xs text-slate-400">Upload any mock test paper, coaching PDF, or PYQ file</p>
+          </div>
+        </div>
+        <button onclick="window.pdfQuizEngine.closeUploadModal()" class="text-slate-400 hover:text-white p-1">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Drag & Drop Zone -->
+      <div id="pdf-upload-dropzone" class="p-8 border-2 border-dashed border-slate-700 hover:border-purple-500 rounded-2xl text-center cursor-pointer transition bg-slate-950/60 group">
+        <input type="file" id="pdf-file-input" accept=".pdf,.txt,.docx" class="hidden" />
+        <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+          <i class="fas fa-cloud-arrow-up"></i>
+        </div>
+        <div class="text-sm font-bold text-white mb-1">Click to browse or Drag & Drop your file</div>
+        <div class="text-xs text-slate-400">Supports PDF, TXT question sheets with MCQs</div>
+      </div>
+
+      <!-- Live Parse Status Indicator -->
+      <div id="pdf-parse-status" class="text-xs text-slate-300 p-3 rounded-xl bg-slate-950 border border-slate-800 hidden"></div>
+
+      <!-- Preview & Launch Quiz Options (Revealed once parsed) -->
+      <div id="pdf-quiz-preview-section" class="space-y-4 pt-2 border-t border-slate-800 hidden">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-white uppercase tracking-wider">Quiz Setup</span>
+          <span id="parsed-questions-count" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold">0 Questions</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Quiz Title</label>
+            <input type="text" id="custom-quiz-title" placeholder="e.g. Allen Physics Paper 1" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none" />
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Duration (Minutes)</label>
+            <input type="number" id="custom-quiz-duration" value="45" min="5" max="300" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white outline-none" />
+          </div>
+        </div>
+
+        <!-- Sample Questions Preview -->
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-400 mb-1.5">Parsed Questions Sample</label>
+          <div id="parsed-questions-preview" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+        </div>
+
+        <button id="start-custom-quiz-btn" class="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 text-white font-bold text-xs tracking-wide transition shadow-lg shadow-purple-600/30">
+          <i class="fas fa-play mr-2"></i> Start Interactive CBT Test Now
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- JavaScript Modules in proper dependency order -->
   <script src="js/mock-tests-data.js"></script>
+  <script src="js/pdf-quiz-engine.js"></script>
   <script src="js/solar-system.js"></script>
   <script src="js/test-engine.js"></script>
   <script src="js/analysis-engine.js"></script>

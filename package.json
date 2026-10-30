@@ -5,8 +5,7 @@
   "main": "index.html",
   "scripts": {
     "start": "npx serve -s .",
-    "dev": "npx serve -s .",
-    "build": "echo 'Static build complete'"
+    "dev": "npx serve -s ."
   },
   "keywords": [
     "jee",

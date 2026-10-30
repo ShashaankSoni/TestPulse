@@ -91,6 +91,12 @@
           <i class="fas fa-chevron-down text-[10px] text-slate-500"></i>
         </button>
 
+        <!-- Theme Switcher (Dark / Light) -->
+        <button id="theme-toggle-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 hover:text-amber-400 transition" title="Switch Theme (Dark / Light)">
+          <i id="theme-icon" class="fas fa-moon text-amber-400"></i>
+          <span id="theme-text" class="hidden sm:inline font-semibold">Dark</span>
+        </button>
+
         <!-- Gemini API Key button -->
         <button id="open-api-modal-btn" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-950/40 hover:bg-indigo-900/40 border border-indigo-500/30 text-xs transition" title="Configure your free Google Gemini API Key">
           <i class="fas fa-key text-indigo-400"></i>
@@ -762,6 +768,33 @@
         <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Which Competitive Exam are you preparing for?</label>
         <div id="onboarding-exam-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[280px] overflow-y-auto pr-1">
           <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Theme Selection Preference in Onboarding -->
+      <div>
+        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Preferred Study Interface Theme</label>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-indigo-500/50 cursor-pointer transition">
+            <input type="radio" name="onboarding-theme" value="dark" checked class="peer sr-only" onchange="window.setTheme('dark')">
+            <div class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 flex items-center justify-center text-amber-400">
+              <i class="fas fa-moon"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white">Dark Cosmos</div>
+              <div class="text-[10px] text-slate-400">Deep focus & low eye strain</div>
+            </div>
+          </label>
+          <label class="flex items-center gap-3 p-3.5 rounded-xl border border-slate-800 bg-slate-950 hover:border-indigo-500/50 cursor-pointer transition">
+            <input type="radio" name="onboarding-theme" value="light" class="peer sr-only" onchange="window.setTheme('light')">
+            <div class="w-8 h-8 rounded-lg bg-slate-200 border border-slate-300 flex items-center justify-center text-amber-600">
+              <i class="fas fa-sun"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white">Crisp Light</div>
+              <div class="text-[10px] text-slate-400">Clean daytime clarity</div>
+            </div>
+          </label>
         </div>
       </div>
 

@@ -5,12 +5,53 @@ class TestPulseApp {
     this.currentStudent = null;
     this.currentExam = null;
     this.activeTab = 'dashboard';
+    this.currentTheme = localStorage.getItem('testpulse_theme') || 'dark';
 
+    this.initTheme();
     this.initUser();
     this.initNavigation();
     this.initModals();
     this.updateDashboardStats();
     this.renderExamLobby();
+  }
+
+  initTheme() {
+    this.applyTheme(this.currentTheme);
+
+    const themeToggleBtn = document.getElementById('theme-toggle-btn');
+    if (themeToggleBtn) {
+      themeToggleBtn.addEventListener('click', () => this.toggleTheme());
+    }
+  }
+
+  applyTheme(theme) {
+    this.currentTheme = theme;
+    const html = document.documentElement;
+    const icon = document.getElementById('theme-icon');
+    const text = document.getElementById('theme-text');
+
+    if (theme === 'light') {
+      html.classList.remove('dark');
+      html.classList.add('light');
+      if (icon) icon.className = 'fas fa-sun text-amber-500';
+      if (text) text.textContent = 'Light';
+    } else {
+      html.classList.remove('light');
+      html.classList.add('dark');
+      if (icon) icon.className = 'fas fa-moon text-amber-400';
+      if (text) text.textContent = 'Dark';
+    }
+
+    localStorage.setItem('testpulse_theme', theme);
+  }
+
+  toggleTheme() {
+    const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+    this.applyTheme(newTheme);
+
+    if (window.showToast) {
+      window.showToast(`🎨 Switched to ${newTheme === 'dark' ? 'Dark Cosmos' : 'Crisp Light'} theme`, 'info');
+    }
   }
 
   initUser() {
@@ -342,6 +383,19 @@ class TestPulseApp {
     }
   }
 }
+
+// Global Helpers
+window.setTheme = function(theme) {
+  if (window.examApp) {
+    window.examApp.applyTheme(theme);
+  }
+};
+
+window.toggleTheme = function() {
+  if (window.examApp) {
+    window.examApp.toggleTheme();
+  }
+};
 
 // Global Toast System
 window.showToast = function(message, type = 'info') {
